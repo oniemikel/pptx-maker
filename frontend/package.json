@@ -13,25 +13,25 @@
     "build": "quasar build"
   },
   "dependencies": {
-    "@quasar/extras": "^1.16.4",
-    "axios": "^1.2.1",
-    "dayjs": "^1.11.10",
-    "firebase": "^10.11.0",
-    "quasar": "^2.16.4",
-    "vue": "^3.4.27",
-    "vue-router": "^4.3.2"
+    "@quasar/extras": "^1.16.15",
+    "axios": "^1.7.9",
+    "dayjs": "^1.11.13",
+    "firebase": "^11.1.0",
+    "quasar": "^2.17.5",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0"
   },
   "devDependencies": {
-    "@quasar/app-vite": "^1.9.3",
-    "@types/node": "^20.12.7",
-    "@typescript-eslint/eslint-plugin": "^5.10.0",
-    "@typescript-eslint/parser": "^5.10.0",
-    "autoprefixer": "^10.4.2",
-    "eslint": "^8.11.0",
+    "@quasar/app-vite": "^2.0.2",
+    "@types/node": "^22.10.2",
+    "@typescript-eslint/eslint-plugin": "^8.18.1",
+    "@typescript-eslint/parser": "^8.18.1",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.17.0",
     "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-vue": "^9.25.0",
-    "prettier": "^3.2.5",
-    "typescript": "^5.4.5"
+    "eslint-plugin-vue": "^9.32.0",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.2"
   },
   "engines": {
     "node": "^20 || ^18 || ^16",
