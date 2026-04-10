@@ -1,0 +1,15 @@
+{
+  "buildCommand": "cd frontend-next && npm run build",
+  "outputDirectory": "frontend-next/.next",
+  "functions": {
+    "api/**/*.py": {
+      "runtime": "python3.12"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api/:path*"
+    }
+  ]
+}
