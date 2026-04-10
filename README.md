@@ -2,12 +2,19 @@
 
 DA研のための定例会資料作成支援ツール
 
+## Frontend Migration
+
+- 現行フロントエンドは Next.js 版の `/frontend-next` です
+- 既存の `/frontend` (Vue + Quasar) は移行比較用のレガシー実装として保持しています
+
 ## Project Structure
 
 - `/backend`
   - .pptx ファイル作成のための Python プロジェクト
+- `/frontend-next`
+  - UI や API/Firebase 連携のための Next.js プロジェクト（現行）
 - `/frontend`
-  - UI や API 連携のための Vue.js プロジェクト
+  - 旧 UI（Vue.js + Quasar）
 
 ## Deployment
 
@@ -18,7 +25,7 @@ DA研のための定例会資料作成支援ツール
 
 - フロントエンド
   - [GitHub Pages](https://docs.github.com/ja/pages/getting-started-with-github-pages/about-github-pages)
-    - [GitHub Actions](https://github.co.jp/features/actions) によって自動でデプロイされます。詳しくは[ワークフロー](https://github.com/dakken205/pptx-maker/blob/main/.github/workflows/static.yml)を確認してください
+    - Next.js (`/frontend-next`) を static export した成果物が [GitHub Actions](https://github.co.jp/features/actions) によって自動でデプロイされます。詳しくは[ワークフロー](https://github.com/dakken205/pptx-maker/blob/main/.github/workflows/static.yml)を確認してください
   - [Firebase](https://firebase.google.com/)
 
 ## Author

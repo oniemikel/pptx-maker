@@ -1,0 +1,255 @@
+:root {
+  --bg: #f4f7fb;
+  --surface: #ffffff;
+  --surface-2: #f9fbff;
+  --text: #182027;
+  --muted: #5a6570;
+  --primary: #0457c8;
+  --primary-hover: #0149a8;
+  --danger: #c0392b;
+  --danger-hover: #a23124;
+  --border: #d8e1ea;
+  --shadow: 0 14px 40px rgba(22, 34, 56, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  font-family: 'Segoe UI', 'Noto Sans JP', sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 5% 0%, rgba(2, 94, 214, 0.12), transparent 45%),
+    radial-gradient(circle at 90% 0%, rgba(8, 168, 145, 0.1), transparent 42%),
+    var(--bg);
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  background: var(--primary);
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+button:hover {
+  background: var(--primary-hover);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+button.danger {
+  background: var(--danger);
+}
+
+button.danger:hover {
+  background: var(--danger-hover);
+}
+
+input,
+textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #fff;
+}
+
+input:disabled,
+textarea:disabled {
+  background: #f4f5f7;
+}
+
+textarea {
+  resize: vertical;
+}
+
+ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.centered {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.shell {
+  min-height: 100vh;
+  padding: 20px clamp(14px, 3vw, 36px) 36px;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.topbarTitle {
+  margin: 0;
+  font-size: clamp(1.1rem, 2vw, 1.5rem);
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(260px, 0.8fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.panel,
+.agendaPanel,
+.authCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+}
+
+.panel {
+  padding: 20px;
+}
+
+.panelTitle {
+  margin: 0 0 16px;
+  font-size: 1.2rem;
+}
+
+.fieldGroup {
+  margin-bottom: 14px;
+}
+
+.fieldGroup label {
+  display: block;
+  font-size: 0.92rem;
+  margin-bottom: 6px;
+  color: var(--muted);
+}
+
+.actionsRow {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+
+.datePreview {
+  margin: 0 0 16px;
+  color: var(--muted);
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 18px 0;
+}
+
+.sectionTitle {
+  margin: 0 0 12px;
+}
+
+.itemsList {
+  list-style: none;
+  padding: 0;
+  margin: 14px 0 0;
+  display: grid;
+  gap: 10px;
+}
+
+.itemCard {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-2);
+  padding: 12px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.itemTitle {
+  margin: 0 0 6px;
+  font-weight: 700;
+}
+
+.itemContent {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.empty {
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.message {
+  margin-top: 12px;
+  color: #124f9f;
+}
+
+.agendaPanel {
+  padding: 18px;
+  position: sticky;
+  top: 20px;
+}
+
+.agendaPanel h2 {
+  margin: 0 0 10px;
+  font-size: 1.05rem;
+}
+
+.agendaHint {
+  margin: 0 0 8px;
+  color: var(--muted);
+}
+
+.agendaItem {
+  margin: 8px 0;
+}
+
+.authCard {
+  width: min(440px, 100%);
+  padding: 24px;
+}
+
+.authCard h1 {
+  margin: 0 0 14px;
+}
+
+.authForm {
+  display: grid;
+  gap: 10px;
+}
+
+@media (max-width: 960px) {
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .agendaPanel {
+    position: static;
+  }
+}
