@@ -1,21 +1,19 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
+import { useEffect, useState } from 'react';
 import {
   doc,
-  getDoc,
   onSnapshot,
   setDoc,
 } from 'firebase/firestore';
-import { auth, db, apiBaseUrl } from '@/lib/firebase';
+import { db, apiBaseUrl } from '@/lib/firebase';
 import {
   DepartmentsDoc,
   DialogItem,
   GenerateResponse,
-  UserDoc,
 } from '@/lib/types';
 import { toDisplayDate, toFilenameDate, todayAsInput } from '@/lib/date';
+import { useUserRole } from '@/lib/useUserRole';
 
 type ContentFormProps = {
   onDialogChange?: (items: DialogItem[]) => void;
@@ -80,15 +78,21 @@ export default function ContentForm({ onDialogChange }: ContentFormProps) {
   const [de, setDe] = useState<string>('');
   const [biz, setBiz] = useState<string>('');
   const [cc, setCc] = useState<string>('');
-  const [role, setRole] = useState<string>('');
   const [dialog, setDialog] = useState<DialogItem[]>([]);
   const [draftItem, setDraftItem] = useState<DialogItem>(initialDialogItem);
   const [busyState, setBusyState] = useState<BusyState>('idle');
   const [message, setMessage] = useState<string>('');
+  const { role } = useUserRole();
 
-  useEffect(() => {
-    onDialogChange?.(dialog);
-  }, [dialog, onDialogChange]);
+  const setDialogWithCallback = (
+    updater: (current: DialogItem[]) => DialogItem[],
+  ): void => {
+    setDialog((current) => {
+      const nextDialog = updater(current);
+      onDialogChange?.(nextDialog);
+      return nextDialog;
+    });
+  };
 
   useEffect(() => {
     const unsubscribe = onSnapshot(doc(db, 'root', 'departments'), (snapshot) => {
@@ -101,27 +105,9 @@ export default function ContentForm({ onDialogChange }: ContentFormProps) {
       setDe(data.de ?? '');
       setBiz(data.biz ?? '');
       setCc(data.cc ?? '');
-      setDialog(Array.isArray(data.info_contents) ? data.info_contents : []);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (!user?.email) {
-        setRole('');
-        return;
-      }
-
-      const userSnapshot = await getDoc(doc(db, 'users', user.email));
-      if (!userSnapshot.exists()) {
-        setRole('');
-        return;
-      }
-
-      const userData = userSnapshot.data() as UserDoc;
-      setRole(userData.role ?? '');
+      const nextDialog = Array.isArray(data.info_contents) ? data.info_contents : [];
+      setDialog(nextDialog);
+      onDialogChange?.(nextDialog);
     });
 
     return () => unsubscribe();
@@ -129,7 +115,7 @@ export default function ContentForm({ onDialogChange }: ContentFormProps) {
 
   const isBusy = busyState !== 'idle';
 
-  const formattedDate = useMemo(() => toDisplayDate(date), [date]);
+  const formattedDate = toDisplayDate(date);
 
   const canEditDepartment = (department: 'ds' | 'de' | 'biz' | 'cc'): boolean =>
     role.includes(department);
@@ -142,13 +128,15 @@ export default function ContentForm({ onDialogChange }: ContentFormProps) {
       return;
     }
 
-    setDialog((current) => [...current, { title, content }]);
+    setDialogWithCallback((current) => [...current, { title, content }]);
     setDraftItem(initialDialogItem);
     setMessage('連絡事項を追加しました。');
   };
 
   const removeInfoItem = (index: number) => {
-    setDialog((current) => current.filter((_, currentIndex) => currentIndex !== index));
+    setDialogWithCallback((current) =>
+      current.filter((_, currentIndex) => currentIndex !== index),
+    );
     setMessage('連絡事項を削除しました。');
   };
 
@@ -158,7 +146,7 @@ export default function ContentForm({ onDialogChange }: ContentFormProps) {
     setBiz('');
     setCc('');
     setDraftItem(initialDialogItem);
-    setDialog([]);
+    setDialogWithCallback(() => []);
     setMessage('入力内容をリセットしました。');
   };
 
