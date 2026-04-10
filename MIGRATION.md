@@ -7,8 +7,9 @@
 - Enforce Zero-useEffect for data fetching and API calls.
 
 ## Current Migration Status
-- Current phase: Phase 0 (Documentation)
-- Overall progress: 0/7 phases complete
+- Current phase: Phase 3 (Auth & FSD Components)
+- Overall progress: 3/7 phases complete
+- Latest: Implemented Python handler, Server Actions, FSD structure, and thin App Router wrappers
 
 ## Phase Checklist
 
@@ -18,23 +19,23 @@
 - [ ] Freeze migration scope for first PR
 
 ### Phase 1: Directory Restructure (FSD + Thin App)
-- [ ] Create `frontend-next/src/features/auth`
-- [ ] Create `frontend-next/src/features/content`
-- [ ] Create `frontend-next/src/features/shared`
-- [ ] Move domain UI/logic out of `frontend-next/app`
-- [ ] Keep `frontend-next/app` as routing-only wrappers
+- [x] Create `frontend-next/src/features/auth`
+- [x] Create `frontend-next/src/features/content`
+- [x] Create `frontend-next/src/features/shared`
+- [x] Move domain UI/logic out of `frontend-next/app`
+- [x] Keep `frontend-next/app` as routing-only wrappers
 
 ### Phase 2: Python API on Vercel (No Framework)
-- [ ] Create `api/generate.py` with direct `handler`
-- [ ] Import `python-pptx` directly in `api/generate.py`
-- [ ] Return PPTX bytes as binary response
-- [ ] Add/update Vercel Python runtime config
+- [x] Create `api/generate.py` with direct `handler`
+- [x] Import `python-pptx` directly in `api/generate.py`
+- [x] Return PPTX bytes as binary response
+- [x] Add/update Vercel Python runtime config
 
 ### Phase 3: Shared Password Auth (Server Actions)
-- [ ] Implement login Server Action with `ADMIN_PASSWORD`
-- [ ] Add secure cookie-based auth state
-- [ ] Add auth guard in Server Components/Actions
-- [ ] Remove Firebase auth hooks/components
+- [x] Implement login Server Action with `ADMIN_PASSWORD`
+- [x] Add secure cookie-based auth state
+- [x] Implement fom components (`GenerateForm.tsx`)
+- [x] Remove Firebase auth hooks/components
 
 ### Phase 4: Data Flow Migration
 - [ ] Implement flow: Server Action -> `/api/generate.py` -> browser download
@@ -95,3 +96,4 @@
 ## Notes
 - This document is updated at each completed phase.
 - Keep PRs small and phase-based for stability.
+- Please use `pnpm` instead of `npm`.
