@@ -1,7 +1,11 @@
 'use client'
 
-import { useState } from 'react'
-import { generatePptxAction } from '@/features/content/actions/generateAction'
+import { useActionState } from 'react'
+import {
+  generatePptxAction,
+  initialGenerateActionState,
+} from '@/features/content/actions/generateAction'
+import { type GeneratePptxInput } from '@/features/content/model/schema'
 
 /**
  * Minimal form component for PPTX generation.
@@ -10,70 +14,26 @@ import { generatePptxAction } from '@/features/content/actions/generateAction'
  * - Triggers browser download
  */
 
-export function GenerateForm() {
-  const [date, setDate] = useState<string>(new Date().toISOString().split('T')[0])
-  const [ds, setDs] = useState<string>('')
-  const [de, setDe] = useState<string>('')
-  const [biz, setBiz] = useState<string>('')
-  const [cc, setCc] = useState<string>('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string>('')
+type GenerateFormProps = {
+  initialValues: GeneratePptxInput
+}
 
-  async function handleGenerate(e: React.FormEvent) {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
-
-    try {
-      const result = await generatePptxAction({
-        date,
-        ds,
-        de,
-        biz,
-        cc,
-      })
-
-      if (!result.success) {
-        setError(result.error || 'Generation failed')
-        return
-      }
-
-      // Trigger download
-      if (result.data) {
-        const { base64, filename, mimeType } = result.data
-
-        // Decode base64 to binary
-        const binaryString = atob(base64)
-        const bytes = Uint8Array.from(binaryString, (char) => char.charCodeAt(0))
-        const blob = new Blob([bytes], { type: mimeType })
-
-        // Create download link
-        const downloadUrl = URL.createObjectURL(blob)
-        const anchor = document.createElement('a')
-        anchor.href = downloadUrl
-        anchor.download = filename
-        document.body.appendChild(anchor)
-        anchor.click()
-        document.body.removeChild(anchor)
-        URL.revokeObjectURL(downloadUrl)
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error')
-    } finally {
-      setLoading(false)
-    }
-  }
+export function GenerateForm({ initialValues }: GenerateFormProps) {
+  const [state, formAction, isPending] = useActionState(
+    generatePptxAction,
+    initialGenerateActionState,
+  )
 
   return (
-    <form onSubmit={handleGenerate} className="generate-form">
+    <form action={formAction} className="generate-form">
       <div className="form-group">
         <label htmlFor="date">Date:</label>
         <input
           id="date"
+          name="date"
           type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          disabled={loading}
+          defaultValue={initialValues.date}
+          disabled={isPending}
           required
         />
       </div>
@@ -82,9 +42,9 @@ export function GenerateForm() {
         <label htmlFor="ds">Department S:</label>
         <textarea
           id="ds"
-          value={ds}
-          onChange={(e) => setDs(e.target.value)}
-          disabled={loading}
+          name="ds"
+          defaultValue={initialValues.ds}
+          disabled={isPending}
           rows={5}
         />
       </div>
@@ -93,9 +53,9 @@ export function GenerateForm() {
         <label htmlFor="de">Department E:</label>
         <textarea
           id="de"
-          value={de}
-          onChange={(e) => setDe(e.target.value)}
-          disabled={loading}
+          name="de"
+          defaultValue={initialValues.de}
+          disabled={isPending}
           rows={5}
         />
       </div>
@@ -104,9 +64,9 @@ export function GenerateForm() {
         <label htmlFor="biz">Business:</label>
         <textarea
           id="biz"
-          value={biz}
-          onChange={(e) => setBiz(e.target.value)}
-          disabled={loading}
+          name="biz"
+          defaultValue={initialValues.biz}
+          disabled={isPending}
           rows={5}
         />
       </div>
@@ -115,18 +75,30 @@ export function GenerateForm() {
         <label htmlFor="cc">CC:</label>
         <textarea
           id="cc"
-          value={cc}
-          onChange={(e) => setCc(e.target.value)}
-          disabled={loading}
+          name="cc"
+          defaultValue={initialValues.cc}
+          disabled={isPending}
           rows={5}
         />
       </div>
 
-      <button type="submit" disabled={loading}>
-        {loading ? 'Generating...' : 'Generate PPTX'}
+      <button type="submit" disabled={isPending}>
+        {isPending ? 'Generating...' : 'Generate PPTX'}
       </button>
 
-      {error && <div className="error-message">{error}</div>}
+      {state.status === 'error' && <div className="error-message">{state.message}</div>}
+
+      {state.status === 'success' && state.download && (
+        <div className="success-message">
+          <p>{state.message}</p>
+          <a
+            href={`data:${state.download.mimeType};base64,${state.download.base64}`}
+            download={state.download.filename}
+          >
+            Download generated PPTX
+          </a>
+        </div>
+      )}
 
       <style jsx>{`
         .generate-form {
@@ -187,6 +159,19 @@ export function GenerateForm() {
           background-color: #fee;
           color: #c33;
           border-radius: 4px;
+        }
+
+        .success-message {
+          padding: 1rem;
+          background-color: #eef8ee;
+          color: #215c21;
+          border-radius: 4px;
+        }
+
+        .success-message a {
+          color: #0f4d0f;
+          font-weight: 600;
+          text-decoration: underline;
         }
       `}</style>
     </form>

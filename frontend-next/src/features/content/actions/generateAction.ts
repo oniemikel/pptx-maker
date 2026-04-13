@@ -1,29 +1,46 @@
 'use server'
 
+import { cookies } from 'next/headers'
 import { z } from 'zod'
+import {
+  GeneratePptxSchema,
+  type GenerateActionState,
+  initialGenerateActionState,
+} from '@/features/content/model/schema'
 
 /**
  * Server Action to call `/api/generate` endpoint.
  * This action validates input and calls the Python PPTX generator.
  */
 
-const GeneratePptxSchema = z.object({
-  date: z.string().min(1, 'Date is required'),
-  ds: z.string().optional().default(''),
-  de: z.string().optional().default(''),
-  biz: z.string().optional().default(''),
-  cc: z.string().optional().default(''),
-})
+export async function generatePptxAction(
+  _previousState: GenerateActionState,
+  formData: FormData,
+): Promise<GenerateActionState> {
+  const cookieStore = await cookies()
+  const authToken = cookieStore.get('auth-token')
+  if (!authToken) {
+    return {
+      status: 'error',
+      message: 'Unauthorized. Please login first.',
+    }
+  }
 
-export async function generatePptxAction(formData: z.infer<typeof GeneratePptxSchema>) {
-  // Validate input
   let validated: z.infer<typeof GeneratePptxSchema>
   try {
-    validated = GeneratePptxSchema.parse(formData)
+    validated = GeneratePptxSchema.parse({
+      date: formData.get('date'),
+      ds: formData.get('ds') ?? '',
+      de: formData.get('de') ?? '',
+      biz: formData.get('biz') ?? '',
+      cc: formData.get('cc') ?? '',
+    })
   } catch (error) {
+    const message =
+      error instanceof z.ZodError ? error.errors[0].message : 'Validation failed'
     return {
-      success: false,
-      error: error instanceof z.ZodError ? error.errors[0].message : 'Validation failed',
+      status: 'error',
+      message,
     }
   }
 
@@ -44,8 +61,8 @@ export async function generatePptxAction(formData: z.infer<typeof GeneratePptxSc
     if (!response.ok) {
       const errorBody = await response.text()
       return {
-        success: false,
-        error: `Server returned ${response.status}: ${errorBody}`,
+        status: 'error',
+        message: `Server returned ${response.status}: ${errorBody}`,
       }
     }
 
@@ -58,17 +75,20 @@ export async function generatePptxAction(formData: z.infer<typeof GeneratePptxSc
     const base64 = buffer.toString('base64')
 
     return {
-      success: true,
-      data: {
+      status: 'success',
+      message: 'PPTX is ready. Click the download link below.',
+      download: {
         filename: `meeting_${validated.date}.pptx`,
-        base64: base64,
+        base64,
         mimeType: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
       },
     }
   } catch (error) {
     return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error occurred',
+      status: 'error',
+      message: error instanceof Error ? error.message : 'Unknown error occurred',
     }
   }
 }
+
+export { initialGenerateActionState }

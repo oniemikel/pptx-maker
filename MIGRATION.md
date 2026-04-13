@@ -7,9 +7,9 @@
 - Enforce Zero-useEffect for data fetching and API calls.
 
 ## Current Migration Status
-- Current phase: Phase 3 (Auth & FSD Components)
-- Overall progress: 3/7 phases complete
-- Latest: Implemented Python handler, Server Actions, FSD structure, and thin App Router wrappers
+- Current phase: Phase 5 (Zero-useEffect enforcement in progress)
+- Overall progress: 4/7 phases complete
+- Latest: Completed Phase 4 data-flow migration with `useActionState` + server-side validation
 
 ## Phase Checklist
 
@@ -38,9 +38,9 @@
 - [x] Remove Firebase auth hooks/components
 
 ### Phase 4: Data Flow Migration
-- [ ] Implement flow: Server Action -> `/api/generate.py` -> browser download
-- [ ] Remove client-side direct API patterns that bypass Server Actions
-- [ ] Keep all generation data request-scoped only
+- [x] Implement flow: Server Action -> `/api/generate.py` -> browser download
+- [x] Remove client-side direct API patterns that bypass Server Actions
+- [x] Keep all generation data request-scoped only
 
 ### Phase 5: Zero-useEffect Enforcement
 - [ ] Audit all remaining `useEffect`
@@ -97,3 +97,13 @@
 - This document is updated at each completed phase.
 - Keep PRs small and phase-based for stability.
 - Please use `pnpm` instead of `npm`.
+
+## useEffect Removal Log (Phase 4)
+- `frontend-next/src/features/content/components/GenerateForm.tsx`
+	- Result: `useEffect` count is `0` before and after this phase.
+	- Change: Replaced manual client submit flow with `useActionState` + `<form action={serverAction}>`.
+	- Reason: Keep request orchestration on the server and avoid client-side fetch/effect orchestration.
+
+- `frontend-next/src/features/content/actions/generateAction.ts`
+	- Change: Switched to `FormData` action signature for `useActionState` and moved validation/auth checks to server.
+	- Reason: Enforce "client fetch禁止・Server Actions経由" rule.
