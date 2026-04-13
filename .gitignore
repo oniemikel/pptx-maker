@@ -29,14 +29,7 @@ pip-delete-this-directory.txt
 
 # --- Environment Variables (CRITICAL) ---
 # セキュリティのため、これらは絶対にコミットしない
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.env.development
-.env.test
-.env.production
+.env.*
 
 # --- OS / IDE ---
 .DS_Store
